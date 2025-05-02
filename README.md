@@ -29,7 +29,7 @@ This Music Player integrates with PlayerNotificationManager from ExoPlayer to pr
 - Jetpack Compose
 - Koin for Dependency Injection
 - Glide/Coil for Image Loading/Showing
-- Exoplayer etc.,
+- Exoplayer
 
 ## ScreenShots  
 ![image](https://github.com/myofficework000/Musify/assets/51234843/42f3194e-6a79-4e82-97dc-c5c160234d96)
