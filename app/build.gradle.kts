@@ -84,5 +84,5 @@ dependencies {
     // Coil
     implementation("io.coil-kt:coil-compose:2.4.0")
 
-    implementation("io.insert-koin:koin-android:3.5.0")
+    implementation("io.insert-koin:koin-android:4.1.0")
 }
