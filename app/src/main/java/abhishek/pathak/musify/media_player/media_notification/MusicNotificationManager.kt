@@ -1,5 +1,7 @@
 package abhishek.pathak.musify.media_player.media_notification
 
+import abhishek.pathak.musify.R
+import abhishek.pathak.musify.utils.Constants
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -13,13 +15,8 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.session.MediaSession
 import androidx.media3.session.MediaSessionService
 import androidx.media3.ui.PlayerNotificationManager
-import abhishek.pathak.musify.R
-import abhishek.pathak.musify.utils.Constants
 
-class MusicNotificationManager(
-    private val context: Context,
-    private val exoPlayer: Player
-) {
+class MusicNotificationManager(private val context: Context, private val exoPlayer: Player) {
 
     private val musicNotificationManager: NotificationManagerCompat =
         NotificationManagerCompat.from(context)
@@ -32,11 +29,12 @@ class MusicNotificationManager(
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun createMusicNotificationChannel() {
-        val musicNotificationChannel = NotificationChannel(
-            Constants.NOTIFICATION_CHANNEL_ID,
-            Constants.NOTIFICATION_CHANNEL_NAME,
-            NotificationManager.IMPORTANCE_DEFAULT
-        )
+        val musicNotificationChannel =
+            NotificationChannel(
+                Constants.NOTIFICATION_CHANNEL_ID,
+                Constants.NOTIFICATION_CHANNEL_NAME,
+                NotificationManager.IMPORTANCE_DEFAULT,
+            )
 
         musicNotificationManager.createNotificationChannel(musicNotificationChannel)
     }
@@ -44,14 +42,14 @@ class MusicNotificationManager(
     @UnstableApi
     private fun buildMusicNotification(mediaSession: MediaSession) {
         PlayerNotificationManager.Builder(
-            context,
-            Constants.NOTIFICATION_ID,
-            Constants.NOTIFICATION_CHANNEL_ID
-        )
+                context,
+                Constants.NOTIFICATION_ID,
+                Constants.NOTIFICATION_CHANNEL_ID,
+            )
             .setMediaDescriptionAdapter(
                 MusicNotificationDescriptorAdapter(
                     context = context,
-                    pendingIntent = mediaSession.sessionActivity
+                    pendingIntent = mediaSession.sessionActivity,
                 )
             )
             .setSmallIconResourceId(R.drawable.music_icon)
@@ -71,7 +69,7 @@ class MusicNotificationManager(
     @UnstableApi
     fun startMusicNotificationService(
         mediaSessionService: MediaSessionService,
-        mediaSession: MediaSession
+        mediaSession: MediaSession,
     ) {
         buildMusicNotification(mediaSession)
         startForegroundMusicService(mediaSessionService)
@@ -79,9 +77,10 @@ class MusicNotificationManager(
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun startForegroundMusicService(mediaSessionService: MediaSessionService) {
-        val musicNotification = Notification.Builder(context, Constants.NOTIFICATION_CHANNEL_ID)
-            .setCategory(Notification.CATEGORY_SERVICE)
-            .build()
+        val musicNotification =
+            Notification.Builder(context, Constants.NOTIFICATION_CHANNEL_ID)
+                .setCategory(Notification.CATEGORY_SERVICE)
+                .build()
 
         mediaSessionService.startForeground(Constants.NOTIFICATION_ID, musicNotification)
     }

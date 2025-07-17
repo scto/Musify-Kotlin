@@ -1,6 +1,10 @@
 package abhishek.pathak.musify
 
+import abhishek.pathak.musify.media_player.service.MediaService
+import abhishek.pathak.musify.presentation.screens.home.HomeScreen
+import abhishek.pathak.musify.presentation.screens.home.HomeViewModel
 import abhishek.pathak.musify.ui.theme.Media3ComposeMusicAppTheme
+import abhishek.pathak.musify.utils.HomeUiEvents
 import android.Manifest
 import android.content.Intent
 import android.os.Build
@@ -18,11 +22,6 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberPermissionState
-import abhishek.pathak.musify.media_player.service.MediaService
-import abhishek.pathak.musify.presentation.screens.home.HomeScreen
-import abhishek.pathak.musify.presentation.screens.home.HomeViewModel
-import abhishek.pathak.musify.utils.HomeUiEvents
-
 
 class MainActivity : ComponentActivity() {
     private var isServiceRunning = false
@@ -32,12 +31,12 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             Media3ComposeMusicAppTheme {
-                val isPermissionGranted = rememberPermissionState(
-                    permission = if (Build.VERSION.SDK_INT >= 33)
-                        Manifest.permission.READ_MEDIA_AUDIO
-                    else
-                        Manifest.permission.READ_EXTERNAL_STORAGE
-                )
+                val isPermissionGranted =
+                    rememberPermissionState(
+                        permission =
+                            if (Build.VERSION.SDK_INT >= 33) Manifest.permission.READ_MEDIA_AUDIO
+                            else Manifest.permission.READ_EXTERNAL_STORAGE
+                    )
                 val lifeCycleOwner = LocalLifecycleOwner.current
 
                 DisposableEffect(key1 = lifeCycleOwner) {
@@ -47,13 +46,11 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                     lifeCycleOwner.lifecycle.addObserver(observer)
-                    onDispose {
-                        lifeCycleOwner.lifecycle.removeObserver(observer)
-                    }
+                    onDispose { lifeCycleOwner.lifecycle.removeObserver(observer) }
                 }
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
+                    color = MaterialTheme.colorScheme.background,
                 ) {
                     val homeViewModel: HomeViewModel = viewModel()
                     HomeScreen(
@@ -64,16 +61,12 @@ class MainActivity : ComponentActivity() {
                         isMusicPlaying = homeViewModel.isMusicPlaying,
                         currentPlayingMusic = homeViewModel.currentSelectedMusic,
                         musicList = homeViewModel.musicList,
-                        onStartCallback = {
-                            homeViewModel.onHomeUiEvents(HomeUiEvents.PlayPause)
-                        },
+                        onStartCallback = { homeViewModel.onHomeUiEvents(HomeUiEvents.PlayPause) },
                         onMusicClick = {
                             homeViewModel.onHomeUiEvents(HomeUiEvents.CurrentAudioChanged(it))
                             startMusicService()
                         },
-                        onNextCallback = {
-                            homeViewModel.onHomeUiEvents(HomeUiEvents.SeekToNext)
-                        }
+                        onNextCallback = { homeViewModel.onHomeUiEvents(HomeUiEvents.SeekToNext) },
                     )
                 }
             }
@@ -92,4 +85,3 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-

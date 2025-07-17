@@ -1,10 +1,10 @@
 package abhishek.pathak.musify.media_player.service
 
+import abhishek.pathak.musify.utils.MediaStateEvents
+import abhishek.pathak.musify.utils.MusicStates
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
-import abhishek.pathak.musify.utils.MediaStateEvents
-import abhishek.pathak.musify.utils.MusicStates
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -15,9 +15,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class MusicServiceHandler(
-    private val exoPlayer: Player,
-) : Player.Listener {
+class MusicServiceHandler(private val exoPlayer: Player) : Player.Listener {
 
     private val _musicStates: MutableStateFlow<MusicStates> = MutableStateFlow(MusicStates.Initial)
     val musicStates: StateFlow<MusicStates> = _musicStates.asStateFlow()
@@ -59,9 +57,7 @@ class MusicServiceHandler(
 
                     else -> {
                         exoPlayer.seekToDefaultPosition(selectedMusicIndex)
-                        _musicStates.value = MusicStates.MediaPlaying(
-                            isPlaying = true
-                        )
+                        _musicStates.value = MusicStates.MediaPlaying(isPlaying = true)
                         exoPlayer.playWhenReady = true
                         startProgressUpdate()
                     }
@@ -69,17 +65,15 @@ class MusicServiceHandler(
             }
 
             is MediaStateEvents.MediaProgress -> {
-                exoPlayer.seekTo(
-                    (exoPlayer.duration * mediaStateEvents.progress).toLong()
-                )
+                exoPlayer.seekTo((exoPlayer.duration * mediaStateEvents.progress).toLong())
             }
         }
     }
 
     override fun onPlaybackStateChanged(playbackState: Int) {
         when (playbackState) {
-            ExoPlayer.STATE_BUFFERING -> _musicStates.value =
-                MusicStates.MediaBuffering(exoPlayer.currentPosition)
+            ExoPlayer.STATE_BUFFERING ->
+                _musicStates.value = MusicStates.MediaBuffering(exoPlayer.currentPosition)
 
             ExoPlayer.STATE_READY -> _musicStates.value = MusicStates.MediaReady(exoPlayer.duration)
 
@@ -98,9 +92,7 @@ class MusicServiceHandler(
         _musicStates.value = MusicStates.MediaPlaying(isPlaying = isPlaying)
         _musicStates.value = MusicStates.CurrentMediaPlaying(exoPlayer.currentMediaItemIndex)
         if (isPlaying) {
-            GlobalScope.launch(Dispatchers.Main) {
-                startProgressUpdate()
-            }
+            GlobalScope.launch(Dispatchers.Main) { startProgressUpdate() }
         } else {
             stopProgressUpdate()
         }
@@ -112,19 +104,18 @@ class MusicServiceHandler(
             stopProgressUpdate()
         } else {
             exoPlayer.play()
-            _musicStates.value = MusicStates.MediaPlaying(
-                isPlaying = true
-            )
+            _musicStates.value = MusicStates.MediaPlaying(isPlaying = true)
             startProgressUpdate()
         }
     }
 
-    private suspend fun startProgressUpdate() = job.run {
-        while (true) {
-            delay(500)
-            _musicStates.value = MusicStates.MediaProgress(exoPlayer.currentPosition)
+    private suspend fun startProgressUpdate() =
+        job.run {
+            while (true) {
+                delay(500)
+                _musicStates.value = MusicStates.MediaProgress(exoPlayer.currentPosition)
+            }
         }
-    }
 
     private fun stopProgressUpdate() {
         job?.cancel()

@@ -2,9 +2,9 @@ package abhishek.pathak.musify.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val md_theme_light_primary = Color(0xFF006D3A)//Color(0xFFA63B00)
+val md_theme_light_primary = Color(0xFF006D3A) // Color(0xFFA63B00)
 val md_theme_light_onPrimary = Color(0xFFFFFFFF)
-val md_theme_light_primaryContainer = Color(0xFF79FCA7)//Color(0xFFFFDBCE)
+val md_theme_light_primaryContainer = Color(0xFF79FCA7) // Color(0xFFFFDBCE)
 val md_theme_light_onPrimaryContainer = Color(0xFF370E00)
 val md_theme_light_secondary = Color(0xFF77574B)
 val md_theme_light_onSecondary = Color(0xFFFFFFFF)
@@ -20,9 +20,9 @@ val md_theme_light_onError = Color(0xFFFFFFFF)
 val md_theme_light_onErrorContainer = Color(0xFF410002)
 val md_theme_light_background = Color(0xFFFFFBFF)
 val md_theme_light_onBackground = Color(0xFF201A18)
-val md_theme_light_surface = Color(0xff39e75f)//Color(0xFFFFFBFF)
+val md_theme_light_surface = Color(0xff39e75f) // Color(0xFFFFFBFF)
 val md_theme_light_onSurface = Color(0xFF201A18)
-val md_theme_light_surfaceVariant = Color(0xFF79FCA7)//Color(0xFFF5DED6)
+val md_theme_light_surfaceVariant = Color(0xFF79FCA7) // Color(0xFFF5DED6)
 val md_theme_light_onSurfaceVariant = Color(0xFF53433E)
 val md_theme_light_outline = Color(0xFF85736D)
 val md_theme_light_inverseOnSurface = Color(0xFFFBEEEA)
@@ -63,6 +63,5 @@ val md_theme_dark_shadow = Color(0xFF000000)
 val md_theme_dark_surfaceTint = Color(0xFFFFB599)
 val md_theme_dark_outlineVariant = Color(0xFF53433E)
 val md_theme_dark_scrim = Color(0xFF000000)
-
 
 val seed = Color(0xFFFF6A23)

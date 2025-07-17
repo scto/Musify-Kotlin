@@ -1,5 +1,12 @@
 package abhishek.pathak.musify.presentation.screens.home
 
+import abhishek.pathak.musify.data.local.models.AudioItem
+import abhishek.pathak.musify.data.repository.MusicRepository
+import abhishek.pathak.musify.media_player.service.MusicServiceHandler
+import abhishek.pathak.musify.utils.HomeUIState
+import abhishek.pathak.musify.utils.HomeUiEvents
+import abhishek.pathak.musify.utils.MediaStateEvents
+import abhishek.pathak.musify.utils.MusicStates
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableLongStateOf
@@ -13,13 +20,9 @@ import androidx.lifecycle.viewmodel.compose.SavedStateHandleSaveableApi
 import androidx.lifecycle.viewmodel.compose.saveable
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
-import abhishek.pathak.musify.data.local.models.AudioItem
-import abhishek.pathak.musify.data.repository.MusicRepository
-import abhishek.pathak.musify.media_player.service.MusicServiceHandler
-import abhishek.pathak.musify.utils.HomeUIState
-import abhishek.pathak.musify.utils.HomeUiEvents
-import abhishek.pathak.musify.utils.MediaStateEvents
-import abhishek.pathak.musify.utils.MusicStates
+import java.util.concurrent.TimeUnit.MILLISECONDS
+import java.util.concurrent.TimeUnit.MINUTES
+import java.util.concurrent.TimeUnit.SECONDS
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -27,14 +30,9 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import java.util.concurrent.TimeUnit.MILLISECONDS
-import java.util.concurrent.TimeUnit.MINUTES
-import java.util.concurrent.TimeUnit.SECONDS
 
 @OptIn(SavedStateHandleSaveableApi::class)
-class HomeViewModel(
-    savedStateHandle: SavedStateHandle,
-) : ViewModel(), KoinComponent {
+class HomeViewModel(savedStateHandle: SavedStateHandle) : ViewModel(), KoinComponent {
 
     private val musicServiceHandler: MusicServiceHandler by inject<MusicServiceHandler>()
     private val repository: MusicRepository by inject<MusicRepository>()
@@ -43,18 +41,7 @@ class HomeViewModel(
     var progress by savedStateHandle.saveable { mutableFloatStateOf(0f) }
     private var progressValue by savedStateHandle.saveable { mutableStateOf("00:00") }
     var isMusicPlaying by savedStateHandle.saveable { mutableStateOf(false) }
-    var currentSelectedMusic by mutableStateOf(
-            AudioItem(
-                0L,
-                "".toUri(),
-                "",
-                "",
-                0,
-                "",
-                "",
-                null
-            )
-        )
+    var currentSelectedMusic by mutableStateOf(AudioItem(0L, "".toUri(), "", "", 0, "", "", null))
 
     var musicList by mutableStateOf(listOf<AudioItem>())
 
@@ -87,43 +74,43 @@ class HomeViewModel(
         }
     }
 
-    fun onHomeUiEvents(homeUiEvents: HomeUiEvents) = viewModelScope.launch {
-        when (homeUiEvents) {
-            HomeUiEvents.Backward -> musicServiceHandler.onMediaStateEvents(MediaStateEvents.Backward)
-            HomeUiEvents.Forward -> musicServiceHandler.onMediaStateEvents(MediaStateEvents.Forward)
-            HomeUiEvents.SeekToNext -> musicServiceHandler.onMediaStateEvents(MediaStateEvents.SeekToNext)
-            HomeUiEvents.SeekToPrevious -> musicServiceHandler.onMediaStateEvents(MediaStateEvents.SeekToPrevious)
-            is HomeUiEvents.PlayPause -> {
-                musicServiceHandler.onMediaStateEvents(
-                    MediaStateEvents.PlayPause
-                )
-            }
+    fun onHomeUiEvents(homeUiEvents: HomeUiEvents) =
+        viewModelScope.launch {
+            when (homeUiEvents) {
+                HomeUiEvents.Backward ->
+                    musicServiceHandler.onMediaStateEvents(MediaStateEvents.Backward)
+                HomeUiEvents.Forward ->
+                    musicServiceHandler.onMediaStateEvents(MediaStateEvents.Forward)
+                HomeUiEvents.SeekToNext ->
+                    musicServiceHandler.onMediaStateEvents(MediaStateEvents.SeekToNext)
+                HomeUiEvents.SeekToPrevious ->
+                    musicServiceHandler.onMediaStateEvents(MediaStateEvents.SeekToPrevious)
+                is HomeUiEvents.PlayPause -> {
+                    musicServiceHandler.onMediaStateEvents(MediaStateEvents.PlayPause)
+                }
 
-            is HomeUiEvents.SeekTo -> {
-                musicServiceHandler.onMediaStateEvents(
-                    MediaStateEvents.SeekTo,
-                    seekPosition = ((duration * homeUiEvents.position) / 100f).toLong()
-                )
-            }
-
-            is HomeUiEvents.CurrentAudioChanged -> {
-                musicServiceHandler.onMediaStateEvents(
-                    MediaStateEvents.SelectedMusicChange,
-                    selectedMusicIndex = homeUiEvents.index
-                )
-            }
-
-            is HomeUiEvents.UpdateProgress -> {
-                musicServiceHandler.onMediaStateEvents(
-                    MediaStateEvents.MediaProgress(
-                        homeUiEvents.progress
+                is HomeUiEvents.SeekTo -> {
+                    musicServiceHandler.onMediaStateEvents(
+                        MediaStateEvents.SeekTo,
+                        seekPosition = ((duration * homeUiEvents.position) / 100f).toLong(),
                     )
-                )
-                progress = homeUiEvents.progress
-            }
+                }
 
+                is HomeUiEvents.CurrentAudioChanged -> {
+                    musicServiceHandler.onMediaStateEvents(
+                        MediaStateEvents.SelectedMusicChange,
+                        selectedMusicIndex = homeUiEvents.index,
+                    )
+                }
+
+                is HomeUiEvents.UpdateProgress -> {
+                    musicServiceHandler.onMediaStateEvents(
+                        MediaStateEvents.MediaProgress(homeUiEvents.progress)
+                    )
+                    progress = homeUiEvents.progress
+                }
+            }
         }
-    }
 
     private fun getMusicData() {
         viewModelScope.launch {
@@ -134,20 +121,20 @@ class HomeViewModel(
     }
 
     private fun setMusicItems() {
-        musicList.map { audioItem ->
-            MediaItem.Builder()
-                .setUri(audioItem.uri)
-                .setMediaMetadata(
-                    MediaMetadata.Builder()
-                        .setAlbumArtist(audioItem.artist)
-                        .setDisplayTitle(audioItem.title)
-                        .setSubtitle(audioItem.displayName)
-                        .build()
-                )
-                .build()
-        }.also {
-            musicServiceHandler.setMediaItemList(it)
-        }
+        musicList
+            .map { audioItem ->
+                MediaItem.Builder()
+                    .setUri(audioItem.uri)
+                    .setMediaMetadata(
+                        MediaMetadata.Builder()
+                            .setAlbumArtist(audioItem.artist)
+                            .setDisplayTitle(audioItem.title)
+                            .setSubtitle(audioItem.displayName)
+                            .build()
+                    )
+                    .build()
+            }
+            .also { musicServiceHandler.setMediaItemList(it) }
     }
 
     private fun progressCalculation(currentProgress: Long) {
@@ -166,9 +153,7 @@ class HomeViewModel(
     }
 
     override fun onCleared() {
-        viewModelScope.launch {
-            musicServiceHandler.onMediaStateEvents(MediaStateEvents.Stop)
-        }
+        viewModelScope.launch { musicServiceHandler.onMediaStateEvents(MediaStateEvents.Stop) }
         super.onCleared()
     }
 }

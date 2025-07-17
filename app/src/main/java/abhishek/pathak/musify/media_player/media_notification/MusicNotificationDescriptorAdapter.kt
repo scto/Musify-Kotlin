@@ -15,7 +15,7 @@ import com.bumptech.glide.request.transition.Transition
 @UnstableApi
 class MusicNotificationDescriptorAdapter(
     private val context: Context,
-    private val pendingIntent: PendingIntent?
+    private val pendingIntent: PendingIntent?,
 ) : PlayerNotificationManager.MediaDescriptionAdapter {
     override fun getCurrentContentTitle(player: Player): CharSequence =
         player.mediaMetadata.albumTitle ?: "Unknown"
@@ -27,19 +27,24 @@ class MusicNotificationDescriptorAdapter(
 
     override fun getCurrentLargeIcon(
         player: Player,
-        callback: PlayerNotificationManager.BitmapCallback
+        callback: PlayerNotificationManager.BitmapCallback,
     ): Bitmap? {
         Glide.with(context)
             .asBitmap()
             .load(player.mediaMetadata.artworkUri)
             .diskCacheStrategy(DiskCacheStrategy.ALL)
-            .into(object : CustomTarget<Bitmap>() {
-                override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
-                    callback.onBitmap(resource)
-                }
+            .into(
+                object : CustomTarget<Bitmap>() {
+                    override fun onResourceReady(
+                        resource: Bitmap,
+                        transition: Transition<in Bitmap>?,
+                    ) {
+                        callback.onBitmap(resource)
+                    }
 
-                override fun onLoadCleared(placeholder: Drawable?) = Unit
-            })
+                    override fun onLoadCleared(placeholder: Drawable?) = Unit
+                }
+            )
         return null
     }
 }

@@ -1,5 +1,7 @@
 package abhishek.pathak.musify.presentation.widgets
 
+import abhishek.pathak.musify.R
+import abhishek.pathak.musify.data.local.models.AudioItem
 import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -34,8 +36,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import abhishek.pathak.musify.R
-import abhishek.pathak.musify.data.local.models.AudioItem
 
 @Composable
 fun MiniPlayer(
@@ -48,30 +48,23 @@ fun MiniPlayer(
 ) {
     BottomAppBar(
         content = {
-            Column(
-                modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 4.dp)
-            ) {
+            Column(modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 4.dp)) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    ArtistInfoTab(
-                        audioItem = musicItem,
-                        modifier = Modifier.weight(1f)
-                    )
+                    ArtistInfoTab(audioItem = musicItem, modifier = Modifier.weight(1f))
                     MiniPlayerControls(
                         isMusicPlaying = isMusicPlaying,
                         onStartCallback = onStartCallback,
-                        onNextCallback = onNextCallback
+                        onNextCallback = onNextCallback,
                     )
                 }
                 Slider(
                     value = progress,
                     valueRange = 0f..100f,
-                    onValueChange = {
-                        onProgressCallback(it)
-                    }
+                    onValueChange = { onProgressCallback(it) },
                 )
             }
         }
@@ -85,50 +78,34 @@ private fun MiniPlayerControls(
     onStartCallback: () -> Unit,
     onNextCallback: () -> Unit,
 ) {
-    Row(
-        modifier = modifier
-            .padding(4.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
+    Row(modifier = modifier.padding(4.dp), verticalAlignment = Alignment.CenterVertically) {
         MiniPlayerIcon(
-            icon = if (isMusicPlaying) Icons.Default.Pause
-            else Icons.Default.PlayArrow
+            icon = if (isMusicPlaying) Icons.Default.Pause else Icons.Default.PlayArrow
         ) {
             onStartCallback()
         }
         Icon(
-            modifier = Modifier
-                .clickable {
-                    onNextCallback()
-                },
+            modifier = Modifier.clickable { onNextCallback() },
             imageVector = Icons.Default.SkipNext,
-            contentDescription = "next"
+            contentDescription = "next",
         )
     }
 }
 
 @Composable
-private fun ArtistInfoTab(
-    audioItem: AudioItem,
-    modifier: Modifier = Modifier,
-) {
-    Row(
-        modifier = modifier.padding(4.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
+private fun ArtistInfoTab(audioItem: AudioItem, modifier: Modifier = Modifier) {
+    Row(modifier = modifier.padding(4.dp), verticalAlignment = Alignment.CenterVertically) {
         if (audioItem.artWork != null) {
             AsyncImage(
                 model = audioItem.artWork,
                 contentDescription = null,
-                modifier = Modifier
-                    .size(40.dp)
-                    .clip(RoundedCornerShape(8.dp)),
+                modifier = Modifier.size(40.dp).clip(RoundedCornerShape(8.dp)),
             )
         } else {
             Icon(
                 modifier = Modifier.size(24.dp),
                 painter = painterResource(id = R.drawable.music_icon),
-                contentDescription = null
+                contentDescription = null,
             )
         }
         Spacer(modifier = Modifier.width(8.dp))
@@ -138,14 +115,14 @@ private fun ArtistInfoTab(
                 fontWeight = FontWeight.Bold,
                 style = MaterialTheme.typography.titleLarge,
                 overflow = TextOverflow.Clip,
-                maxLines = 1
+                maxLines = 1,
             )
             Text(
                 text = audioItem.artist,
                 fontWeight = FontWeight.Normal,
                 style = MaterialTheme.typography.bodySmall,
                 overflow = TextOverflow.Clip,
-                maxLines = 1
+                maxLines = 1,
             )
         }
     }
@@ -158,12 +135,8 @@ private fun MiniPlayerIcon(
     onClickCallback: () -> Unit,
 ) {
     Box(
-        modifier = modifier
-            .padding(4.dp)
-            .clickable {
-                onClickCallback()
-            },
-        contentAlignment = Alignment.Center
+        modifier = modifier.padding(4.dp).clickable { onClickCallback() },
+        contentAlignment = Alignment.Center,
     ) {
         Icon(imageVector = icon, contentDescription = "player icon")
     }
@@ -175,10 +148,12 @@ private fun PreviewMiniPlayer() {
     MaterialTheme {
         Surface(Modifier.background(MaterialTheme.colorScheme.background)) {
             MiniPlayer(
-                musicItem = AudioItem(
-                    0, Uri.parse(""), "Song Name", "Artist Name", 0, "title", "", null
-                ),
-                1.4f, { it }, false, {}
+                musicItem =
+                    AudioItem(0, Uri.parse(""), "Song Name", "Artist Name", 0, "title", "", null),
+                1.4f,
+                { it },
+                false,
+                {},
             ) {}
         }
     }

@@ -1,5 +1,9 @@
 package abhishek.pathak.musify.di
 
+import abhishek.pathak.musify.data.local.ContentResolverHelper
+import abhishek.pathak.musify.data.repository.MusicRepository
+import abhishek.pathak.musify.media_player.media_notification.MusicNotificationManager
+import abhishek.pathak.musify.media_player.service.MusicServiceHandler
 import android.annotation.SuppressLint
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
@@ -7,13 +11,8 @@ import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
 import androidx.media3.session.MediaSession
-import abhishek.pathak.musify.data.local.ContentResolverHelper
-import abhishek.pathak.musify.data.repository.MusicRepository
-import abhishek.pathak.musify.media_player.media_notification.MusicNotificationManager
-import abhishek.pathak.musify.media_player.service.MusicServiceHandler
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
-
 
 @SuppressLint("UnsafeOptInUsageError")
 val appModule = module {
@@ -32,20 +31,13 @@ val appModule = module {
             .build()
     }
 
-    factory<MediaSession> {
-        MediaSession.Builder(get(), get()).build()
-    }
+    factory<MediaSession> { MediaSession.Builder(get(), get()).build() }
 
     single<MusicNotificationManager> {
-        MusicNotificationManager(
-            context = get(),
-            exoPlayer = get()
-        )
+        MusicNotificationManager(context = get(), exoPlayer = get())
     }
 
-    single<MusicServiceHandler> {
-        MusicServiceHandler(get())
-    }
+    single<MusicServiceHandler> { MusicServiceHandler(get()) }
 }
 
 val dataModule = module {
