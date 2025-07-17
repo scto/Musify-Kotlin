@@ -76,7 +76,7 @@ dependencies {
     implementation("androidx.legacy:legacy-support-v4:1.0.0") // Needed for MediaSessionCompat.Token
 
     //permission handling
-    implementation ("com.google.accompanist:accompanist-permissions:0.30.0")
+    implementation ("com.google.accompanist:accompanist-permissions:0.37.3")
 
     // Glide
     implementation("com.github.bumptech.glide:glide:4.15.1")
