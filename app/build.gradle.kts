@@ -79,7 +79,7 @@ dependencies {
     implementation ("com.google.accompanist:accompanist-permissions:0.30.0")
 
     // Glide
-    implementation("com.github.bumptech.glide:glide:4.15.1")
+    implementation("com.github.bumptech.glide:glide:4.16.0")
 
     // Coil
     implementation("io.coil-kt:coil-compose:2.4.0")
